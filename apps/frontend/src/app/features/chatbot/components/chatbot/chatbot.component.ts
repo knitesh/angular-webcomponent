@@ -1,8 +1,7 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChatMessage } from '../../models/chat-message.model';
-import { createUserMessage, isValidMessage } from '../../utils/chatbot.util';
 import { ChatbotService } from '../../services/chatbot.service';
 
 @Component({
@@ -15,24 +14,16 @@ import { ChatbotService } from '../../services/chatbot.service';
 export class ChatbotComponent implements OnInit {
   @Input() title: string = 'Chatbot';
   @Input() initialMessage: string = 'Hello! How can I help you today?';
-  @Output() messageSent = new EventEmitter<string>();
+  @Output() messageSent = new EventEmitter<ChatMessage>();
 
-  isOpen: boolean = false;
-  userInput: string = '';
   messages: ChatMessage[] = [];
+  userInput: string = '';
+  isOpen: boolean = false;
 
   constructor(private chatbotService: ChatbotService) {}
 
   ngOnInit() {
-    this.messages = this.chatbotService.getMessageHistory();
-    if (this.messages.length === 0) {
-      this.chatbotService.addMessage({ 
-        text: this.initialMessage, 
-        isUser: false,
-        timestamp: new Date()
-      });
-      this.messages = this.chatbotService.getMessageHistory();
-    }
+    this.addMessage(this.initialMessage, false);
   }
 
   toggleChat() {
@@ -40,18 +31,20 @@ export class ChatbotComponent implements OnInit {
   }
 
   sendMessage() {
-    if (!isValidMessage(this.userInput)) return;
+    if (!this.userInput.trim()) return;
 
-    const userMessage = createUserMessage(this.userInput);
-    this.chatbotService.addMessage(userMessage);
-    this.messages = this.chatbotService.getMessageHistory();
-    this.messageSent.emit(this.userInput);
+    const userMessage: ChatMessage = { text: this.userInput, isUser: true, timestamp: new Date() };
+    this.addMessage(userMessage.text, true);
+    this.messageSent.emit(userMessage);
 
-    this.chatbotService.getBotResponse(this.userInput).subscribe(botMessage => {
-      this.chatbotService.addMessage(botMessage);
-      this.messages = this.chatbotService.getMessageHistory();
+    this.chatbotService.getBotResponse(this.userInput).subscribe((response: ChatMessage) => {
+      this.addMessage(response.text, false);
     });
 
     this.userInput = '';
+  }
+
+  private addMessage(text: string, isUser: boolean) {
+    this.messages.push({ text, isUser, timestamp: new Date() });
   }
 } 
