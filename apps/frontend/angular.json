@@ -54,6 +54,39 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "webcomponent": {
+              "outputPath": "dist/webcomponent",
+              "index": "src/index.webcomponent.html",
+              "main": "src/main.webcomponent.ts",
+              "tsConfig": "tsconfig.app.json",
+              "polyfills": ["zone.js"],
+              "assets": [
+                "src/favicon.ico",
+                "src/assets"
+              ],
+              "styles": [
+                "src/styles.scss"
+              ],
+              "scripts": [],
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "outputHashing": "all",
+              "optimization": true,
+              "sourceMap": false,
+              "namedChunks": false,
+              "vendorChunk": false,
+              "buildOptimizer": true
             }
           },
           "defaultConfiguration": "production"

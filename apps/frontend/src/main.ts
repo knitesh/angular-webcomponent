@@ -1,19 +1,5 @@
-import { createCustomElement } from '@angular/elements';
-import { createApplication } from '@angular/platform-browser';
-import { ChatbotComponent } from './app/features/chatbot/components/chatbot/chatbot.component';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { AppModule } from './app/app.module';
 
-async function bootstrap() {
-  const app = await createApplication({
-    providers: []
-  });
-
-  // Define the custom element
-  const chatbotElement = createCustomElement(ChatbotComponent, {
-    injector: app.injector
-  });
-
-  // Register the custom element
-  customElements.define('app-chatbot', chatbotElement);
-}
-
-bootstrap(); 
+platformBrowserDynamic().bootstrapModule(AppModule)
+  .catch(err => console.error(err)); 
