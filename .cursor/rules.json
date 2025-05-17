@@ -1,0 +1,142 @@
+{
+  "version": 1,
+  "rules": {
+    "techStack": {
+      "frontend": {
+        "framework": "angular",
+        "version": "17.0.0",
+        "packageManager": "npm",
+        "styling": {
+          "preprocessor": "scss",
+          "globalStyles": "src/styles.scss"
+        }
+      },
+      "backend": {
+        "framework": "express",
+        "version": "4.18.2",
+        "packageManager": "npm"
+      },
+      "database": {
+        "type": "json",
+        "schema": "db/schema.json"
+      }
+    },
+    "workspace": {
+      "type": "nx",
+      "monorepo": true,
+      "apps": {
+        "frontend": "apps/frontend",
+        "backend": "apps/backend"
+      }
+    },
+    "codeOrganization": {
+      "featureStructure": {
+        "location": "src/app/features",
+        "naming": "${featureName}",
+        "rules": [
+          "Each feature must have its own folder",
+          "Feature name should be in kebab-case",
+          "All feature-related files must be in the feature folder"
+        ],
+        "structure": {
+          "components": {
+            "location": "${featureName}/components",
+            "naming": "${componentName}.component"
+          },
+          "services": {
+            "location": "${featureName}/services",
+            "naming": "${serviceName}.service"
+          },
+          "models": {
+            "location": "${featureName}/models",
+            "naming": "${modelName}.model"
+          },
+          "utils": {
+            "location": "${featureName}/utils",
+            "naming": "${utilName}.util"
+          },
+          "guards": {
+            "location": "${featureName}/guards",
+            "naming": "${guardName}.guard"
+          },
+          "resolvers": {
+            "location": "${featureName}/resolvers",
+            "naming": "${resolverName}.resolver"
+          },
+          "state": {
+            "location": "${featureName}/state",
+            "naming": "${stateName}.state"
+          }
+        }
+      },
+      "componentStructure": {
+        "template": {
+          "location": "separate",
+          "extension": "html",
+          "naming": "${componentName}.component.html"
+        },
+        "styles": {
+          "location": "separate",
+          "extension": "scss",
+          "naming": "${componentName}.component.scss"
+        },
+        "logic": {
+          "location": "separate",
+          "extension": "ts",
+          "naming": "${componentName}.component.ts"
+        }
+      },
+      "pureFunctions": {
+        "location": "utils",
+        "naming": "${functionName}.util.ts",
+        "rules": [
+          "Extract complex logic from components",
+          "Keep components focused on presentation",
+          "Use pure functions for business logic",
+          "Place utility functions in dedicated files"
+        ]
+      },
+      "services": {
+        "location": "services",
+        "naming": "${serviceName}.service.ts",
+        "rules": [
+          "Extract API calls to services",
+          "Keep services focused on data operations",
+          "Use dependency injection"
+        ]
+      }
+    },
+    "linting": {
+      "frontend": {
+        "eslint": true,
+        "prettier": true,
+        "rules": {
+          "maxLinesPerFile": 300,
+          "maxLinesPerFunction": 50,
+          "maxParameters": 3,
+          "noInlineStyles": true,
+          "noInlineTemplates": true
+        }
+      },
+      "backend": {
+        "eslint": true,
+        "prettier": true
+      }
+    },
+    "testing": {
+      "frontend": {
+        "framework": "jest",
+        "coverage": true,
+        "rules": {
+          "unitTests": true,
+          "e2eTests": true,
+          "componentTests": true
+        }
+      },
+      "backend": {
+        "framework": "jest",
+        "coverage": true
+      }
+    }
+  }
+} 
