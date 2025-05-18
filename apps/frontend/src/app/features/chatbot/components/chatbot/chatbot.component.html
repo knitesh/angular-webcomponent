@@ -1,15 +1,30 @@
 <div class="chatbot-container" [class.open]="isOpen">
   <div class="chatbot-header" (click)="toggleChat()">
     <h2>{{ title }}</h2>
+    <button class="toggle-button">{{ isOpen ? '▼' : '▲' }}</button>
   </div>
-  <div class="chatbot-messages">
-    <div *ngFor="let message of messages" class="message" [ngClass]="{'user-message': message.isUser, 'bot-message': !message.isUser}">
-      <div class="message-content">{{ message.text }}</div>
-      <div class="message-timestamp">{{ message.timestamp | date:'short' }}</div>
+
+  <div class="chatbot-messages" *ngIf="isOpen">
+    <div *ngFor="let message of messages" 
+         class="message" 
+         [class.user-message]="message.isUser"
+         [class.bot-message]="!message.isUser">
+      <div class="message-content">
+        <ng-container *ngFor="let line of message.text.split('\n')">
+          {{ line }}<br>
+        </ng-container>
+      </div>
+      <div class="message-timestamp">
+        {{ message.timestamp | date:'shortTime' }}
+      </div>
     </div>
   </div>
-  <div class="chatbot-input">
-    <input type="text" [(ngModel)]="userInput" (keyup.enter)="sendMessage()" placeholder="Type your message...">
+
+  <div class="chatbot-input" *ngIf="isOpen">
+    <input type="text" 
+           [(ngModel)]="userInput" 
+           (keyup.enter)="sendMessage()" 
+           placeholder="Type your message...">
     <button (click)="sendMessage()">Send</button>
   </div>
 </div> 

@@ -1,7 +1,9 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ChatMessage, createUserMessage, createBotMessage, getBotResponse, isValidMessage } from './chatbot.util';
+import { ChatMessage } from '../../features/chatbot/models/chat-message.model';
+import { ChatbotService } from '../../features/chatbot/services/chatbot.service';
+import { StockPricesService } from '../../features/chatbot/services/stock-prices.service';
 
 @Component({
   selector: 'app-chatbot',
@@ -13,14 +15,19 @@ import { ChatMessage, createUserMessage, createBotMessage, getBotResponse, isVal
 export class ChatbotComponent implements OnInit {
   @Input() title: string = 'Chatbot';
   @Input() initialMessage: string = 'Hello! How can I help you today?';
-  @Output() messageSent = new EventEmitter<string>();
+  @Output() messageSent = new EventEmitter<ChatMessage>();
 
-  isOpen: boolean = false;
-  userInput: string = '';
   messages: ChatMessage[] = [];
+  userInput: string = '';
+  isOpen: boolean = false;
+
+  constructor(
+    private chatbotService: ChatbotService,
+    private stockPricesService: StockPricesService
+  ) {}
 
   ngOnInit() {
-    this.messages.push(createBotMessage(this.initialMessage));
+    this.addMessage(this.initialMessage, false);
   }
 
   toggleChat() {
@@ -28,17 +35,20 @@ export class ChatbotComponent implements OnInit {
   }
 
   sendMessage() {
-    if (!isValidMessage(this.userInput)) return;
+    if (!this.userInput.trim()) return;
 
-    // Add user message
-    this.messages.push(createUserMessage(this.userInput));
-    this.messageSent.emit(this.userInput);
+    const userMessage: ChatMessage = { text: this.userInput, isUser: true, timestamp: new Date() };
+    this.addMessage(userMessage.text, true);
+    this.messageSent.emit(userMessage);
 
-    // Simulate bot response (replace with actual API call)
-    setTimeout(() => {
-      this.messages.push(createBotMessage(getBotResponse(this.userInput)));
-    }, 1000);
+    this.chatbotService.getBotResponse(this.userInput).subscribe((response: ChatMessage) => {
+      this.addMessage(response.text, false);
+    });
 
     this.userInput = '';
+  }
+
+  private addMessage(text: string, isUser: boolean) {
+    this.messages.push({ text, isUser, timestamp: new Date() });
   }
 } 
